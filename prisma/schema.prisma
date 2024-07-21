@@ -12,3 +12,35 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Permission {
+  name        String           @id
+  description String?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime?        @updatedAt
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime?        @updatedAt
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  role       String @map("role")
+  permission String @map("permission")
+
+  rolesRef       Role       @relation(fields: [role], references: [id], onDelete: Cascade)
+  permissionsRef Permission @relation(fields: [permission], references: [name], onDelete: Cascade)
+
+  @@id([role, permission])
+  @@map("roles_permissions")
+}
