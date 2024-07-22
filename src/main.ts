@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpResponseInterceptor } from './interceptors/http-response-interceptor.interceptor';
 import {
+  AxiosExceptionFilter,
   ExceptionFilter,
   PrismaExceptionFilter,
 } from './exception-filters/prisma-exception.filter';
@@ -18,6 +19,7 @@ async function bootstrap() {
   app.useGlobalFilters(
     new ExceptionFilter(),
     new ExceptionFilter(),
+    new AxiosExceptionFilter(),
     new PrismaExceptionFilter(),
   ); // filter order => (3rd , 2nd , 1st)
 

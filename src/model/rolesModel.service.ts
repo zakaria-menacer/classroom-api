@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ModelService } from './model.service';
 import { CreateRoleDto } from 'src/roles/dto/create-role.dto';
-import { permission } from 'process';
 import { UpdateRoleDto } from 'src/roles/dto/update-role.dto';
 
 @Injectable()

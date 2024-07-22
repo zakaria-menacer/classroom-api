@@ -1,5 +1,7 @@
+// @ts-nocheck
 import {
   ArgumentsHost,
+  BadRequestException,
   Catch,
   HttpException,
   HttpStatus,
@@ -8,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
+import { AxiosError } from 'axios';
 import { Response } from 'express';
 @Injectable()
 @Catch(Prisma.PrismaClientKnownRequestError)
@@ -60,6 +63,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
     if (exception instanceof HttpException) {
       throw exception;
     }
+
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'some thing went wrong',
@@ -89,6 +93,57 @@ export class ExceptionFilter extends BaseExceptionFilter {
         process.env.NODE_ENV !== 'production'
           ? errorResponse?.error
           : undefined,
+    });
+  }
+}
+
+@Injectable()
+@Catch(AxiosError)
+export class AxiosExceptionFilter extends BaseExceptionFilter {
+  catch(exception: AxiosError, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    const status = exception.response?.status || 500;
+    let message = 'Something went wrong';
+    // switch (status) {
+    //   case 400:
+    //     if (
+    //       // @ts-ignore
+    //       exception.response?.data?.errorCode === 'E0000001' &&
+    //       (
+    //         exception.response.data?.errorCauses[0].errorSummary as string
+    //       ).includes('already exists')
+    //     )
+    //       //E0000001:Okta error : API validation exception
+    //       message = exception.response.data.errorCauses[0].errorSummary;
+    //     console.log(exception.response.data);
+    //     break;
+    //   case 404:
+    //     message = 'User not found';
+    //     break;
+    //   case 500:
+    //     console.log(exception);
+    //     break;
+    //   default:
+    //     message = exception.response.data.errorCauses[0].errorSummary;
+    //     break;
+    // }
+
+    if (exception.response.data?.error_description) {
+      message = exception.response.data.error_description;
+    } else if (exception.response.data.errorCauses.length != 0) {
+      message = exception.response.data.errorCauses[0].errorSummary;
+    } else {
+      message = exception.response.data.errorSummary;
+    }
+
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      // path: request.url,
+      message,
     });
   }
 }

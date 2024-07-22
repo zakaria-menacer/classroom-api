@@ -30,6 +30,7 @@ model Role {
   created_at  DateTime         @default(now())
   updated_at  DateTime?        @updatedAt
   permissions RolePermission[]
+  User        User[]
 
   @@map("roles")
 }
@@ -38,9 +39,24 @@ model RolePermission {
   role       String @map("role")
   permission String @map("permission")
 
-  rolesRef       Role       @relation(fields: [role], references: [id], onDelete: Cascade)
-  permissionsRef Permission @relation(fields: [permission], references: [name], onDelete: Cascade)
+  rolesRef       Role       @relation(fields: [role], references: [id])
+  permissionsRef Permission @relation(fields: [permission], references: [name])
 
   @@id([role, permission])
   @@map("roles_permissions")
+}
+
+model User {
+  id          String    @unique
+  firstName   String?   @map("first_name")
+  lastName    String?   @map("last_name")
+  email       String    @id
+  mobilePhone String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  active      Boolean   @default(true)
+  roleId      String    @map("role_id")
+  roleRef     Role      @relation(fields: [roleId], references: [id])
+
+  @@map("users")
 }
