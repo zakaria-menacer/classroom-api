@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class UserOktaService {
@@ -52,6 +53,48 @@ export class UserOktaService {
     });
     return response.data;
   }
+
+  async update(id: string, data: UpdateUserDto) {
+    const response = await axios.post(
+      `${this.domain}/api/v1/users/${id}`,
+      {
+        profile: { ...data },
+      },
+      {
+        headers: {
+          Authorization: `SSWS ${this.oktaApiToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return response.data;
+  }
+  async deactivate(id: string) {
+    const response = await axios.post(
+      `${this.domain}/api/v1/users/${id}/lifecycle/deactivate`,
+      {},
+      {
+        headers: {
+          Authorization: `SSWS ${this.oktaApiToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return response.data;
+  }
+  async delete(id: string) {
+    const response = await axios.delete(`${this.domain}/api/v1/users/${id}`, {
+      headers: {
+        Authorization: `SSWS ${this.oktaApiToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return response.data;
+  }
+
   private async assignToApp(id: string) {
     const response = await axios.post(
       `${this.domain}/api/v1/apps/${this.appId}/users`,

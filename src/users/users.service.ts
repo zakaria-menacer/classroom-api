@@ -41,19 +41,33 @@ export class UsersService {
     return response;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const result = await this.userModel.findAll();
+    return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.userModel.findOne(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, dto: UpdateUserDto) {
+    //* update user in okta first
+    await this.userOktaService.update(id, dto);
+
+    //* update user in db
+    return await this.userModel.update(id, dto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    //* remove first from okta
+    await this.userOktaService.deactivate(id);
+    await this.userOktaService.delete(id);
+
+    //* delete from db
+    await this.userModel.delete(id);
+  }
+
+  async assignRole(id: string, roleId: string) {
+    return await this.userModel.assignRole(id, roleId);
   }
 }

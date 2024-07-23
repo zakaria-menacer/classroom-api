@@ -27,7 +27,7 @@ export class AuthService {
     // const user = await this.userOkta.getOne(payload.sub);
 
     // *get user from db
-    const user = await this.userModel.getOne(payload.sub);
+    const user = await this.userModel.findOne(payload.sub);
     if (!user) throw new BadRequestException('incorrect credential');
     return { token, user };
   }

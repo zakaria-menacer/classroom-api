@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModelService } from './model.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class UsersModelService {
@@ -12,9 +13,7 @@ export class UsersModelService {
     });
     return result;
   }
-  async getOne(id: string) {
-    console.log(id);
-
+  async findOne(id: string) {
     const result = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -26,8 +25,26 @@ export class UsersModelService {
     const { permissions: tmp, ...role } = result.roleRef;
     delete result.roleRef;
     delete result.roleId;
-    console.log(result);
 
     return { ...result, role, permissions };
+  }
+  async findAll() {
+    const result = await this.prisma.user.findMany();
+    return result;
+  }
+
+  async update(id: string, data: UpdateUserDto) {
+    return await this.prisma.user.update({ where: { id }, data });
+  }
+
+  async delete(id: string) {
+    return await this.prisma.user.delete({ where: { id } });
+  }
+
+  async assignRole(id: string, roleId: string) {
+    return await this.prisma.user.update({
+      where: { id },
+      data: { roleRef: { connect: { id: roleId } } },
+    });
   }
 }
