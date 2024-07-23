@@ -8,12 +8,13 @@ import {
   Delete,
   NotFoundException,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
-  ApiBody,
+  ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -24,9 +25,14 @@ import {
   GetAllUsersResponseSchema,
   UpdateUserResponseSchema,
 } from './dto/httpResponses.dto';
+import { AuthenticationGuard } from 'src/auth/auth.guard';
+import { UsersGuard } from './users.guard';
+import { Permissions } from 'src/tools/custom.decorator';
 
 @Controller('users')
 @ApiTags('users')
+@ApiBearerAuth()
+@UseGuards(AuthenticationGuard, UsersGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

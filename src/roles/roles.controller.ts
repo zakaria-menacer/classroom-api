@@ -7,8 +7,8 @@ import {
   Param,
   Delete,
   NotFoundException,
-  HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -19,12 +19,7 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
-  getSchemaPath,
-  IntersectionType,
-  OmitType,
-  PickType,
 } from '@nestjs/swagger';
-import { Role } from './entities/role.entity';
 import {
   AssignPermissionResponseDto,
   CreateRoleResponseDto,
@@ -34,9 +29,12 @@ import {
   UpdateRolePermissionResponseDto,
   UpdateRoleResponseDto,
 } from './dto/httpResponse.dto';
+import { AuthenticationGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from './roles.guard';
 
 @Controller('roles')
 @ApiTags('roles')
+@UseGuards(AuthenticationGuard, RolesGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

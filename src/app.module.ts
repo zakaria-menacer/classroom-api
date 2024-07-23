@@ -8,6 +8,7 @@ import { RolesModule } from './roles/roles.module';
 import { OktaModule } from './okta/okta.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ToolsModule } from './tools/tools.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     OktaModule,
     UsersModule,
     AuthModule,
+    ToolsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
