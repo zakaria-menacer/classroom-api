@@ -9,6 +9,7 @@ import { OktaModule } from './okta/okta.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ToolsModule } from './tools/tools.module';
+import { ClassroomsModule } from './classrooms/classrooms.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ToolsModule } from './tools/tools.module';
     UsersModule,
     AuthModule,
     ToolsModule,
+    ClassroomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

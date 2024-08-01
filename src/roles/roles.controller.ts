@@ -50,6 +50,10 @@ export class RolesController {
     return { message: 'role created successfully', data: response };
   }
 
+  // ***********************************************************************
+  //* GET ALL ROLES
+  // ***********************************************************************
+
   @Get()
   @ApiOperation({ summary: 'Get all roles' })
   @ApiResponse({

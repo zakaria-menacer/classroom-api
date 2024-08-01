@@ -47,16 +47,41 @@ model RolePermission {
 }
 
 model User {
-  id          String    @unique
-  firstName   String?   @map("first_name")
-  lastName    String?   @map("last_name")
-  email       String    @id
+  id          String       @unique
+  firstName   String?      @map("first_name")
+  lastName    String?      @map("last_name")
+  email       String       @id
   mobilePhone String?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime? @updatedAt
-  active      Boolean   @default(true)
-  roleId      String    @map("role_id")
-  roleRef     Role      @relation(fields: [roleId], references: [id])
+  created_at  DateTime     @default(now())
+  updated_at  DateTime?    @updatedAt
+  active      Boolean      @default(true)
+  roleId      String       @map("role_id")
+  roleRef     Role         @relation(fields: [roleId], references: [id])
+  Classroom   Classroom[]
+  Enrollment  Enrollment[]
 
   @@map("users")
+}
+
+model Classroom {
+  id          String       @id @default(uuid())
+  createdBy   String       @map("created_by")
+  name        String
+  description String?
+  UserRef     User         @relation(fields: [createdBy], references: [id])
+  Enrollment  Enrollment[]
+
+  @@map("classrooms")
+}
+
+model Enrollment {
+  userId       String    @map("user_id")
+  classroomId  String    @map("classroom_id")
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  UserRef      User      @relation(fields: [userId], references: [id])
+  ClassroomRef Classroom @relation(fields: [classroomId], references: [id])
+
+  @@id([userId, classroomId])
+  @@map("enrollments")
 }
