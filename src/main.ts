@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpResponseInterceptor } from './interceptors/http-response-interceptor.interceptor';
@@ -13,7 +13,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalInterceptors(new HttpResponseInterceptor()); // Apply the interceptor globally
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new HttpResponseInterceptor(reflector)); // Apply the interceptor globally
 
   // interceptor globally
   app.useGlobalFilters(

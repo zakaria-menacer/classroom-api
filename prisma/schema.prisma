@@ -70,6 +70,7 @@ model Classroom {
   description String?
   UserRef     User         @relation(fields: [createdBy], references: [id])
   Enrollment  Enrollment[]
+  Assignment  Assignment[]
 
   @@map("classrooms")
 }
@@ -84,4 +85,29 @@ model Enrollment {
 
   @@id([userId, classroomId])
   @@map("enrollments")
+}
+
+model Assignment {
+  id             String           @id @default(uuid())
+  title          String
+  body           String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime?        @updatedAt
+  classroomId    String           @map("classroom_id")
+  maxGrade       Float?
+  dueDate        DateTime?
+  ClassroomRef   Classroom        @relation(fields: [classroomId], references: [id])
+  AssignmentFile AssignmentFile[]
+
+  @@map("assignments")
+}
+
+model AssignmentFile {
+  id            String     @id
+  name          String
+  path          String
+  assignmentId  String     @map("assignment_id")
+  AssignmentRef Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@map("assignment_files")
 }

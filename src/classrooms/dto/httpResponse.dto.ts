@@ -47,6 +47,6 @@ export class GetOneClassroomResponseSchema {
     createdBy: string;
     name: string;
     description: string;
-    enrollments: Array<User>;
+    // enrollments: User;
   };
 }
