@@ -6,5 +6,5 @@ export class Assignment {
   updated_at?: Date;
   classroomId: string;
   maxGrade?: number;
-  dueDate?: Date;
+  deadline?: Date;
 }

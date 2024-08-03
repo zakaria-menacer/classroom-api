@@ -6,6 +6,7 @@ import { UsersModelService } from './usersModel.service';
 import { ClassroomsModelService } from './classroomsModel.service';
 import { AssignmentsModelService } from './assignmentsModel.service';
 import { FilesModelService } from './filesModel.service';
+import { SubmissionsModelService } from './submissionsModel.service';
 @Module({
   providers: [
     ModelService,
@@ -15,6 +16,7 @@ import { FilesModelService } from './filesModel.service';
     ClassroomsModelService,
     AssignmentsModelService,
     FilesModelService,
+    SubmissionsModelService,
   ],
   exports: [
     RolesModelService,
@@ -23,6 +25,7 @@ import { FilesModelService } from './filesModel.service';
     ClassroomsModelService,
     AssignmentsModelService,
     FilesModelService,
+    SubmissionsModelService,
   ],
 })
 export class ModelModule {}

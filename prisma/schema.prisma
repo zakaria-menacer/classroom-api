@@ -47,18 +47,19 @@ model RolePermission {
 }
 
 model User {
-  id          String       @unique
-  firstName   String?      @map("first_name")
-  lastName    String?      @map("last_name")
-  email       String       @id
-  mobilePhone String?
-  created_at  DateTime     @default(now())
-  updated_at  DateTime?    @updatedAt
-  active      Boolean      @default(true)
-  roleId      String       @map("role_id")
-  roleRef     Role         @relation(fields: [roleId], references: [id])
-  Classroom   Classroom[]
-  Enrollment  Enrollment[]
+  id                   String                 @unique
+  firstName            String?                @map("first_name")
+  lastName             String?                @map("last_name")
+  email                String                 @id
+  mobilePhone          String?
+  created_at           DateTime               @default(now())
+  updated_at           DateTime?              @updatedAt
+  active               Boolean                @default(true)
+  roleId               String                 @map("role_id")
+  roleRef              Role                   @relation(fields: [roleId], references: [id])
+  Classroom            Classroom[]
+  Enrollment           Enrollment[]
+  AssignmentSubmission AssignmentSubmission[]
 
   @@map("users")
 }
@@ -88,16 +89,17 @@ model Enrollment {
 }
 
 model Assignment {
-  id             String           @id @default(uuid())
-  title          String
-  body           String?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime?        @updatedAt
-  classroomId    String           @map("classroom_id")
-  maxGrade       Float?
-  dueDate        DateTime?
-  ClassroomRef   Classroom        @relation(fields: [classroomId], references: [id])
-  AssignmentFile AssignmentFile[]
+  id                   String                 @id @default(uuid())
+  title                String
+  body                 String?
+  created_at           DateTime               @default(now())
+  updated_at           DateTime?              @updatedAt
+  classroomId          String                 @map("classroom_id")
+  maxGrade             Float?
+  deadline             DateTime?
+  ClassroomRef         Classroom              @relation(fields: [classroomId], references: [id])
+  AssignmentFile       AssignmentFile[]
+  AssignmentSubmission AssignmentSubmission[]
 
   @@map("assignments")
 }
@@ -110,4 +112,40 @@ model AssignmentFile {
   AssignmentRef Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   @@map("assignment_files")
+}
+
+model AssignmentSubmission {
+  id            String     @id @default(uuid())
+  body          String?
+  assignmentId  String     @map("assignment_id")
+  userId        String     @map("user_id")
+  submittedAt   DateTime   @default(now()) @map("submitted_at")
+  updated_at    DateTime?  @updatedAt
+  grade         Float?
+  AssignmentRef Assignment @relation(fields: [assignmentId], references: [id])
+  UserRef       User       @relation(fields: [userId], references: [id])
+
+  status         SubmissionStatus @default(SUBMITTED)
+  SubmissionFile SubmissionFile[]
+
+  @@unique([userId, assignmentId])
+  @@map("assignment_Submissions")
+}
+
+model SubmissionFile {
+  id            String               @id
+  name          String
+  path          String
+  submissionId  String               @map("submission_id")
+  SubmissionRef AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@map("submission_files")
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  REJECTED
+
+  @@map("submission_status")
 }

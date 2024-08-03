@@ -12,5 +12,5 @@ export class CreateAssignmentDto {
   @Transform(({ value }) => parseFloat(value))
   maxGrade?: number;
   @IsOptional()
-  dueDate?: Date;
+  deadline?: Date;
 }

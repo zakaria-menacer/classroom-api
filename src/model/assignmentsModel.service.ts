@@ -36,9 +36,9 @@ export class AssignmentsModelService {
     return await this.prisma.assignment.findMany({ where: { classroomId } });
   }
 
-  async findOne(classroomId: string, assignmentId: string) {
+  async findOne(assignmentId: string) {
     return await this.prisma.assignment.findUnique({
-      where: { id: assignmentId, classroomId },
+      where: { id: assignmentId },
       include: { AssignmentFile: true },
     });
   }
@@ -53,9 +53,9 @@ export class AssignmentsModelService {
     });
   }
 
-  async delete(classroomId: string, assignmentId: string) {
+  async delete(assignmentId: string) {
     return await this.prisma.assignment.delete({
-      where: { classroomId, id: assignmentId },
+      where: { id: assignmentId },
     });
   }
 }

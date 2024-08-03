@@ -30,4 +30,19 @@ export class FilesController {
     res.setHeader('Content-Type', 'application/octet-stream');
     fileStream.pipe(res);
   }
+  @Get('submissions/:fileId')
+  @SkipInterceptor()
+  async getSubmissionsFile(
+    @Param('fileId') fileId: string,
+    @Res() res: Response,
+  ) {
+    const file = await this.filesService.findOneSubmissionFile(fileId);
+    if (!file || !existsSync(join(__dirname, '../../..', file.path)))
+      throw new NotFoundException('File not found');
+
+    const fileStream = createReadStream(join(__dirname, '../../..', file.path));
+    res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    fileStream.pipe(res);
+  }
 }

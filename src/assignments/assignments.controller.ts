@@ -8,7 +8,6 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
@@ -16,7 +15,6 @@ import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import path from 'path';
 import * as fs from 'fs';
 
 @Controller('/classrooms/:classroomId/assignments')

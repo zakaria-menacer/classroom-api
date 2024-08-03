@@ -3,10 +3,11 @@ import { AssignmentsService } from './assignments.service';
 import { AssignmentsController } from './assignments.controller';
 import { ModelModule } from 'src/model/model.module';
 import { FilesModule } from './files/files.module';
+import { SubmissionsModule } from './submissions/submissions.module';
 
 @Module({
   controllers: [AssignmentsController],
   providers: [AssignmentsService],
-  imports:[ModelModule, FilesModule]
+  imports:[ModelModule, FilesModule, SubmissionsModule]
 })
 export class AssignmentsModule {}

@@ -7,4 +7,7 @@ export class FilesModelService {
   async findOneAssignmentFile(id: string) {
     return await this.prisma.assignmentFile.findUnique({ where: { id } });
   }
+  async findOneSubmissionFile(id: string) {
+    return await this.prisma.submissionFile.findUnique({ where: { id } });
+  }
 }

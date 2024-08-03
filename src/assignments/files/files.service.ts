@@ -7,4 +7,7 @@ export class FilesService {
   async findOneAssignmentFile(id: string) {
     return await this.filesModel.findOneAssignmentFile(id);
   }
+  async findOneSubmissionFile(id: string) {
+    return await this.filesModel.findOneSubmissionFile(id);
+  }
 }

@@ -21,7 +21,7 @@ export class AssignmentsService {
   }
 
   async findOne(classroomId: string, assignmentId: string) {
-    return await this.assignmentsModel.findOne(classroomId, assignmentId);
+    return await this.assignmentsModel.findOne(assignmentId);
   }
 
   async update(
@@ -33,13 +33,10 @@ export class AssignmentsService {
   }
 
   async remove(classroomId: string, assignmentId: string) {
-    const assignment = await this.assignmentsModel.findOne(
-      classroomId,
-      assignmentId,
-    );
+    const assignment = await this.assignmentsModel.findOne(assignmentId);
     if (!assignment) return;
 
-    await this.assignmentsModel.delete(classroomId, assignmentId);
+    await this.assignmentsModel.delete(assignmentId);
 
     //* delete assignment files
     assignment.AssignmentFile.forEach((file) => {
