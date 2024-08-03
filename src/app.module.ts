@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { ConfigModule } from '@nestjs/config';
 import { PermissionsModule } from './permissions/permissions.module';
 import { ModelModule } from './model/model.module';
@@ -25,7 +24,5 @@ import { AssignmentsModule } from './assignments/assignments.module';
     ClassroomsModule,
     AssignmentsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

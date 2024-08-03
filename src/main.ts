@@ -31,10 +31,7 @@ async function bootstrap() {
     .setTitle('Classroom API')
     // .setDescription('API for managing roles and permissions')
     .setVersion('1.0')
-    .addBearerAuth(
-      { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
-      'access-token',
-    )
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, document);

@@ -9,3 +9,30 @@ values (
     'ADMIN',
     '.....'
   );
+insert into permissions (name, description)
+values('create:role', '...'),
+  ('read:role', '...'),
+  ('read:role:all', '...'),
+  ('update:role', '...'),
+  ('delete:role', '...');
+insert into roles_permissions (role, permission)
+values (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'create:role'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'read:role'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'read:role:all'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'update:role'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'delete:role'
+  );

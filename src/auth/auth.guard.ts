@@ -12,7 +12,6 @@ export class AuthenticationGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const authorization = req?.headers['authorization'];
     if (!authorization) return false;
-
     const token = authorization.split('Bearer ')[1];
     //*validate token and get payload
     const payload = await this.oidcOkta.introspectIdToken(token);
