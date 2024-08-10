@@ -19,28 +19,34 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from 'src/tools/custom.decorator';
+import { Permissions, User } from 'src/tools/custom.decorator';
 import { AuthenticationGuard } from 'src/auth/auth.guard';
 import {
   AdminClassroomsResponseDto,
   CreateClassroomResponseSchema,
+  EnrollResponseSchema,
   GetOneClassroomResponseSchema,
   NonAdminClassroomsResponseDto,
 } from './dto/httpResponse.dto';
-import { ClassroomsGuard } from './classrooms.guard';
+import {
+  AdminOrOwnedClassroomsGuard,
+  OwnedOrEnrolledClassroomsGuard,
+} from './classrooms.guard';
+import { AuthorizationGuard } from 'src/auth/authorization.guard';
 
 @Controller('classrooms')
 @ApiTags('classrooms')
 @ApiBearerAuth()
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class ClassroomsController {
   constructor(private readonly classroomsService: ClassroomsService) {}
 
-  //***********************************************************
+  //*******************************************************
   //* CREATE CLASSROOM
-  //***********************************************************
+  //*******************************************************
 
   @Post()
+  @Permissions('create:classroom')
   @ApiOperation({ summary: 'Create a Classroom' })
   @ApiResponse({
     status: 201,
@@ -66,9 +72,9 @@ export class ClassroomsController {
     return { message: 'classroom created successfully', data: response };
   }
 
-  //***********************************************************
+  //**************************************************
   //* GET ALL CLASSROOMS
-  //***********************************************************
+  //**************************************************
 
   @Get()
   @ApiOperation({ summary: 'Get classrooms' })
@@ -88,11 +94,13 @@ export class ClassroomsController {
     return await this.classroomsService.findAll(user.id);
   }
 
-  // ***********************************************************
+  // ********************************************************
   //* GET CLASSROOM BY ID
-  //***********************************************************
+  //******************************************************
 
   @Get(':id')
+  @UseGuards(OwnedOrEnrolledClassroomsGuard)
+  @Permissions('read:classroom')
   @ApiOperation({ summary: 'Get a classroom by ID' })
   @ApiResponse({
     status: 200,
@@ -116,12 +124,29 @@ export class ClassroomsController {
     return result;
   }
 
-  // ***********************************************************
+  // *******************************************************
   //* UPDATE CLASSROOM
-  //***********************************************************
+  //********************************************************
 
   @Patch(':id')
-  @UseGuards(ClassroomsGuard)
+  @Permissions('update:classroom')
+  @UseGuards(AdminOrOwnedClassroomsGuard)
+  @ApiOperation({ summary: 'Update a classroom ' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful update of classroom',
+    type: GetOneClassroomResponseSchema,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Classroom not found',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'Classroom not found',
+      },
+    },
+  })
   update(
     @Param('id') id: string,
     @Body() updateClassroomDto: UpdateClassroomDto,
@@ -129,28 +154,72 @@ export class ClassroomsController {
     return this.classroomsService.update(id, updateClassroomDto);
   }
 
+  // *******************************************************
+  //* DELETE CLASSROOM
+  //********************************************************
+
   @Delete(':id')
   @HttpCode(204)
-  @UseGuards(ClassroomsGuard)
+  @Permissions('delete:classroom')
+  @UseGuards(AdminOrOwnedClassroomsGuard)
+  @ApiOperation({ summary: 'delete a classroom ' })
+  @ApiResponse({
+    status: 204,
+    description: 'Successful delete of classroom',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Classroom not found',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'Classroom not found',
+      },
+    },
+  })
   async remove(@Param('id') id: string) {
     await this.classroomsService.remove(id);
     return;
   }
 
-  @Post(':classroomId/users/:userId')
-  async enroll(
-    @Param('classroomId') classroomId: string,
-    @Param('userId') userId: string,
-  ) {
-    const response = await this.classroomsService.enroll(userId, classroomId);
+  @Post(':classroomId/enroll')
+  @ApiOperation({ summary: 'enroll to  a classroom ' })
+  @ApiResponse({
+    status: 201,
+    description: 'Successful enrollment',
+    type: EnrollResponseSchema,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'User is already enrolled in this classroom',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'User is already enrolled in this classroom',
+      },
+    },
+  })
+  async enroll(@Param('classroomId') classroomId: string, @User() user) {
+    const response = await this.classroomsService.enroll(user.id, classroomId);
     return { message: 'user enrolled successfully', data: response };
   }
-  @Delete(':classroomId/users/:userId')
-  async unenroll(
-    @Param('classroomId') classroomId: string,
-    @Param('userId') userId: string,
-  ) {
-    const response = await this.classroomsService.unenroll(userId, classroomId);
-    return { message: 'user unenrolled successfully' };
+  @Delete(':classroomId/enroll')
+  @HttpCode(204)
+  @ApiResponse({
+    status: 400,
+    description: 'User is already enrolled in this classroom',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'User is already enrolled in this classroom',
+      },
+    },
+  })
+  async unenroll(@Param('classroomId') classroomId: string, @User() user) {
+    const response = await this.classroomsService.unenroll(
+      user.id,
+      classroomId,
+    );
+    return;
   }
 }

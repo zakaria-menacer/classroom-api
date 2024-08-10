@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ModelService } from './model.service';
 
 import { CreateSubmissionDto } from 'src/assignments/submissions/dto/create-submission.dto';
@@ -63,7 +67,7 @@ export class SubmissionsModelService {
     return await this.prisma.assignmentSubmission.findUnique({
       where: { id: submission_id },
       include: {
-        SubmissionFile: true,
+        SubmissionFile: { select: { id: true, name: true } },
         AssignmentRef: { include: { ClassroomRef: true } },
       },
     });
@@ -71,7 +75,12 @@ export class SubmissionsModelService {
 
   async grade(submission_id: string, grade: number) {
     const submission = await this.findOne(submission_id);
-    if (submission.AssignmentRef.maxGrade < grade)
+    if (!submission) throw new NotFoundException('Submission not found');
+
+    if (
+      submission?.AssignmentRef?.maxGrade < grade &&
+      submission?.AssignmentRef?.maxGrade
+    )
       throw new ConflictException(
         'Grade cannot be higher than the maximum grade',
       );

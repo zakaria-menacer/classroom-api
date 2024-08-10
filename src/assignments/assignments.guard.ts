@@ -4,13 +4,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { ClassroomsService } from './classrooms.service';
 import { Reflector } from '@nestjs/core';
+import { AssignmentsService } from './assignments.service';
+import { ClassroomsService } from 'src/classrooms/classrooms.service';
 
 @Injectable()
-export class OwnedOrEnrolledClassroomsGuard implements CanActivate {
+export class OwnedOrEnrolledAssignmentGuard implements CanActivate {
   constructor(
+    private readonly assignmentService: AssignmentsService,
     private readonly classroomsService: ClassroomsService,
     private readonly reflector: Reflector,
   ) {}
@@ -21,7 +22,7 @@ export class OwnedOrEnrolledClassroomsGuard implements CanActivate {
     const userId = req?.user?.id;
     if (!userId) return false;
 
-    const classroomId = req.params.id || req.params.classroomId;
+    const assignmentId = req.params.id || req.params.assignmentId;
 
     const requiredPermission = this.reflector.getAllAndOverride<string[]>(
       'permissions',
@@ -39,11 +40,18 @@ export class OwnedOrEnrolledClassroomsGuard implements CanActivate {
       if (haveAdminPermissions) return true;
     }
 
-    const classroom = await this.classroomsService.findOne(classroomId);
-    if (!classroom) {
-      throw new NotFoundException('Classroom not found');
+    const assignment = await this.assignmentService.findOne(assignmentId);
+    if (!assignment) {
+      throw new NotFoundException('assignment not found');
     }
 
+    const classroom = await this.classroomsService.findOne(
+      assignment.classroomId,
+    );
+
+    if (!classroom) {
+      throw new NotFoundException('classroom not found');
+    }
     //* Check if the user is the owner of the classroom
     if (classroom.createdBy === userId) {
       return true;
@@ -53,9 +61,10 @@ export class OwnedOrEnrolledClassroomsGuard implements CanActivate {
   }
 }
 @Injectable()
-export class AdminOrOwnedClassroomsGuard implements CanActivate {
+export class AdminOrOwnedAssignmentGuard implements CanActivate {
   constructor(
     private readonly classroomsService: ClassroomsService,
+    private readonly assignmentService: AssignmentsService,
     private readonly reflector: Reflector,
   ) {}
 
@@ -65,7 +74,7 @@ export class AdminOrOwnedClassroomsGuard implements CanActivate {
     const userId = req?.user?.id;
     if (!userId) return false;
 
-    const classroomId = req.params.id || req.params.classroomId;
+    const assignmentId = req.params.id || req.params.assignmentId;
 
     const requiredPermission = this.reflector.getAllAndOverride<string[]>(
       'permissions',
@@ -78,18 +87,23 @@ export class AdminOrOwnedClassroomsGuard implements CanActivate {
         if (!perm.endsWith(':all')) {
           allPerm = perm + ':all';
         }
-
         return user.permissions?.includes(allPerm);
       });
-
       if (haveAdminPermissions) return true;
     }
 
-    const classroom = await this.classroomsService.findOne(classroomId);
-    if (!classroom) {
-      throw new NotFoundException('Classroom not found');
+    const assignment = await this.assignmentService.findOne(assignmentId);
+    if (!assignment) {
+      throw new NotFoundException('assignment not found');
     }
 
+    const classroom = await this.classroomsService.findOne(
+      assignment.classroomId,
+    );
+
+    if (!classroom) {
+      throw new NotFoundException('classroom not found');
+    }
     //* Check if the user is the owner of the classroom
     if (classroom.createdBy === userId) {
       return true;
@@ -98,9 +112,10 @@ export class AdminOrOwnedClassroomsGuard implements CanActivate {
   }
 }
 @Injectable()
-export class OwnedClassroomsGuard implements CanActivate {
+export class OwnedAssignmentGuard implements CanActivate {
   constructor(
     private readonly classroomsService: ClassroomsService,
+    private readonly assignmentService: AssignmentsService,
     private readonly reflector: Reflector,
   ) {}
 
@@ -110,18 +125,25 @@ export class OwnedClassroomsGuard implements CanActivate {
     const userId = req?.user?.id;
     if (!userId) return false;
 
-    const classroomId = req.params.id || req.params.classroomId;
+    const assignmentId = req.params.id || req.params.assignmentId;
 
     const requiredPermission = this.reflector.getAllAndOverride<string[]>(
       'permissions',
       [context.getHandler(), context.getClass()],
     );
 
-    const classroom = await this.classroomsService.findOne(classroomId);
-    if (!classroom) {
-      throw new NotFoundException('Classroom not found');
+    const assignment = await this.assignmentService.findOne(assignmentId);
+    if (!assignment) {
+      throw new NotFoundException('assignment not found');
     }
 
+    const classroom = await this.classroomsService.findOne(
+      assignment.classroomId,
+    );
+
+    if (!classroom) {
+      throw new NotFoundException('classroom not found');
+    }
     //* Check if the user is the owner of the classroom
     if (classroom.createdBy === userId) {
       return true;

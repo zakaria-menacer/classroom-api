@@ -26,15 +26,19 @@ import {
   UpdateUserResponseSchema,
 } from './dto/httpResponses.dto';
 import { AuthenticationGuard } from 'src/auth/auth.guard';
-import { UsersGuard } from './users.guard';
-import { Permissions } from 'src/tools/custom.decorator';
+import { Permissions, User } from 'src/tools/custom.decorator';
+import { AuthorizationGuard } from 'src/auth/authorization.guard';
 
 @Controller('users')
 @ApiTags('users')
 @ApiBearerAuth()
-@UseGuards(AuthenticationGuard, UsersGuard)
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  //****************************************
+  //**          CREATE USER          ******
+  //****************************************
 
   @Post()
   @ApiOperation({ summary: 'Create a user' })
@@ -70,7 +74,12 @@ export class UsersController {
     return { message: 'user created successfully', data: result };
   }
 
+  //****************************************
+  //**          GET ALL USERS        ******
+  //****************************************
+
   @Get()
+  @Permissions('read:user')
   @ApiOperation({ summary: 'Get  all users' })
   @ApiResponse({
     status: 200,
@@ -81,7 +90,56 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
+  //****************************************
+  //**          GET ME         ******
+  //****************************************
+  @Get('me')
+  @ApiOperation({ summary: 'Get Current User Details' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful retrieval of users',
+    type: GetAllUsersResponseSchema,
+  })
+  async findMe(@User() user) {
+    return await this.usersService.findOne(user.id);
+  }
+
+  //****************************************
+  //**          UPDATE ME          ******
+  //****************************************
+
+  @Patch('me')
+  @ApiOperation({ summary: 'Update Current User' })
+  @ApiParam({ name: 'id', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: UpdateUserResponseSchema,
+  })
+  async updateMe(@User() user, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(user.id, updateUserDto);
+  }
+
+  //****************************************
+  //**          DELETE ME          ******
+  //****************************************
+
+  @Delete('me')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete current user' })
+  @ApiParam({ name: 'id', type: String, description: 'User ID' })
+  @ApiResponse({ status: 204, description: 'User deleted successfully' })
+  async removeMe(@User() user) {
+    await this.usersService.remove(user.id);
+    return;
+  }
+
+  //****************************************
+  //**          GET ONE USER BY ID         ******
+  //****************************************
+
   @Get(':id')
+  @Permissions('read:user')
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiResponse({
     status: 200,
@@ -104,7 +162,12 @@ export class UsersController {
     return result;
   }
 
+  //****************************************
+  //**          UPDATE USER         ******
+  //****************************************
+
   @Patch(':id')
+  @Permissions('update:user')
   @ApiOperation({ summary: 'Update a User' })
   @ApiParam({ name: 'id', type: String, description: 'User ID' })
   @ApiResponse({
@@ -126,7 +189,12 @@ export class UsersController {
     return await this.usersService.update(id, updateUserDto);
   }
 
+  //****************************************
+  //**          DELETE USER         ******
+  //****************************************
+
   @Delete(':id')
+  @Permissions('delete:user')
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete a User' })
   @ApiParam({ name: 'id', type: String, description: 'User ID' })
@@ -136,7 +204,11 @@ export class UsersController {
     return;
   }
 
+  //****************************************
+  //**          ASSIGN ROLE TO A USER         ******
+  //****************************************
   @Post(':id/roles/:roleId')
+  @Permissions('update:user')
   @ApiOperation({ summary: 'Assign a role to  a User' })
   @ApiParam({ name: 'id', type: String, description: 'User ID' })
   @ApiResponse({

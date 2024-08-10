@@ -20,8 +20,15 @@ export class AssignmentsService {
     return await this.assignmentsModel.findAllByClassroom(classroomId);
   }
 
-  async findOne(classroomId: string, assignmentId: string) {
-    return await this.assignmentsModel.findOne(assignmentId);
+  async findOne(assignmentId: string) {
+    const assignment = await this.assignmentsModel.findOne(assignmentId);
+    if (assignment?.AssignmentFile) {
+      for (let i = 0; i < assignment.AssignmentFile.length; i++) {
+        delete assignment.AssignmentFile[i].path;
+        delete assignment.AssignmentFile[i].assignmentId;
+      }
+    }
+    return assignment;
   }
 
   async update(

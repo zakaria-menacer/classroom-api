@@ -7,5 +7,6 @@ import { ModelModule } from 'src/model/model.module';
   controllers: [ClassroomsController],
   providers: [ClassroomsService],
   imports: [ModelModule],
+  exports: [ClassroomsService],
 })
 export class ClassroomsModule {}

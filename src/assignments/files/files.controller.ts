@@ -11,8 +11,11 @@ import { createReadStream, existsSync } from 'fs';
 import { SkipInterceptor } from 'src/tools/skipInterceptor.decorator';
 import { join } from 'path';
 import { Response } from 'express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('files')
+@ApiTags('files')
+@ApiBearerAuth()
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
   @Get('assignments/:fileId')

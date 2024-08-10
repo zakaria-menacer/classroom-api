@@ -1,7 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { SubmissionsModelService } from 'src/model/submissionsModel.service';
 import { AssignmentsModelService } from 'src/model/assignmentsModel.service';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class SubmissionsService {
@@ -39,7 +44,7 @@ export class SubmissionsService {
 
   async findOne(id: string) {
     const result = await this.submissionsModel.findOne(id);
-    if (!result) throw new ForbiddenException('Submission not found');
+    if (!result) throw new NotFoundException('Submission not found');
     return result;
   }
 

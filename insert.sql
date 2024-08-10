@@ -10,11 +10,21 @@ values (
     '.....'
   );
 insert into permissions (name, description)
-values('create:role', '...'),
+values ('create:role', '...'),
   ('read:role', '...'),
   ('read:role:all', '...'),
   ('update:role', '...'),
-  ('delete:role', '...');
+  ('delete:role', '...'),
+  ('create:user', '...'),
+  ('read:user', '...'),
+  ('read:user:all', '...'),
+  ('update:user', '...'),
+  ('delete:user', '...'),
+  ('create:classroom', '...'),
+  ('read:classroom', '...'),
+  ('read:classroom:all', '...'),
+  ('update:classroom', '...'),
+  ('delete:classroom', '...');
 insert into roles_permissions (role, permission)
 values (
     '7d27a29f-d401-472e-bb5a-3554f9197550',
@@ -35,4 +45,24 @@ values (
   (
     '7d27a29f-d401-472e-bb5a-3554f9197550',
     'delete:role'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'create:user'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'read:user'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'read:user:all'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'update:user'
+  ),
+  (
+    '7d27a29f-d401-472e-bb5a-3554f9197550',
+    'delete:user'
   );

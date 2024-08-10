@@ -5,10 +5,12 @@ import {
   SubmissionsController,
 } from './submissions.controller';
 import { ModelModule } from 'src/model/model.module';
+import { AssignmentsService } from '../assignments.service';
+import { ClassroomsModule } from 'src/classrooms/classrooms.module';
 
 @Module({
   controllers: [AssignmentsSubmissionsController, SubmissionsController],
-  providers: [SubmissionsService],
-  imports: [ModelModule],
+  providers: [SubmissionsService, AssignmentsService],
+  imports: [ModelModule, ClassroomsModule],
 })
 export class SubmissionsModule {}
