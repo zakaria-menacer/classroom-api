@@ -34,7 +34,7 @@ export class UsersService {
 
     //* respond with id token and user infos
     const response = await this.authService.login({
-      username: dto.email,
+      email: dto.email,
       password: password,
     });
 

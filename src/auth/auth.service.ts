@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
   async login(dto: LoginDto) {
     //* get id token
-    const token = await this.oidcOkta.getIdToken(dto.username, dto.password);
+    const token = await this.oidcOkta.getIdToken(dto.email, dto.password);
 
     const payload = await this.oidcOkta.introspectIdToken(token);
     if (!payload || payload.active === false) {

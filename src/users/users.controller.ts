@@ -41,6 +41,7 @@ export class UsersController {
   //****************************************
 
   @Post()
+  @Permissions('create:user')
   @ApiOperation({ summary: 'Create a user' })
   @ApiResponse({
     status: 201,
