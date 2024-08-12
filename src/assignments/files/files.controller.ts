@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Res,
-  StreamableFile,
-} from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { createReadStream, existsSync } from 'fs';
 import { SkipInterceptor } from 'src/tools/skipInterceptor.decorator';
@@ -15,6 +8,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('files')
 @ApiTags('files')
+@UseGuards(AuthenticationGuard, AuthorizationGuard)
 @ApiBearerAuth()
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}

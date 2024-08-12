@@ -6,7 +6,7 @@ import {
   AxiosExceptionFilter,
   ExceptionFilter,
   PrismaExceptionFilter,
-} from './exception-filters/prisma-exception.filter';
+} from './exception-filters/exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
