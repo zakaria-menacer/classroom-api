@@ -9,6 +9,7 @@ import {
   NotFoundException,
   HttpCode,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,6 +29,7 @@ import {
 import { AuthenticationGuard } from 'src/auth/auth.guard';
 import { Permissions, User } from 'src/tools/custom.decorator';
 import { AuthorizationGuard } from 'src/auth/authorization.guard';
+import { GetUsersQueryDto } from './dto/get-user.dto';
 
 @Controller('users')
 @ApiTags('users')
@@ -87,8 +89,8 @@ export class UsersController {
     description: 'Successful retrieval of users',
     type: GetAllUsersResponseSchema,
   })
-  async findAll() {
-    return await this.usersService.findAll();
+  async findAll(@Query() query: GetUsersQueryDto) {
+    return await this.usersService.findAll(query);
   }
 
   //****************************************

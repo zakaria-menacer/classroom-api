@@ -8,6 +8,7 @@ import { ModelService } from './model.service';
 import { CreateClassroomDto } from 'src/classrooms/dto/create-classroom.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UpdateClassroomDto } from 'src/classrooms/dto/update-classroom.dto';
+import { GetClassroomsQueryDto } from 'src/classrooms/dto/get-classroom-dto';
 
 @Injectable()
 export class ClassroomsModelService {
@@ -46,17 +47,36 @@ export class ClassroomsModelService {
       throw error;
     }
   }
-  async findAllForAdmin() {
-    return await this.prisma.classroom.findMany({});
+  async findAllForAdmin(query: GetClassroomsQueryDto) {
+    return await this.prisma.classroom.findMany({
+      where: {
+        ...(query.name && { name: { contains: query.name } }),
+        ...(query.createdBy && { createdBy: query.createdBy }),
+      },
+      skip: query.offset && query.offset > 0 ? query.offset : undefined,
+      take: query.limit && query.limit > 0 ? query.limit : undefined,
+    });
   }
-  async findAll(userId: string) {
+  async findAll(userId: string, query: GetClassroomsQueryDto) {
     const ownedClassrooms = await this.prisma.classroom.findMany({
-      where: { createdBy: userId },
+      where: {
+        createdBy: userId,
+        ...(query.name && { name: { contains: query.name } }),
+      },
+      skip: query.offset && query.offset > 0 ? query.offset : undefined,
+      take: query.limit && query.limit > 0 ? query.limit : undefined,
     });
     const enrolledClassrooms = (
       await this.prisma.enrollment.findMany({
-        where: { userId },
+        where: {
+          userId,
+          ClassroomRef: {
+            ...(query.name && { name: { contains: query.name } }),
+          },
+        },
         select: { ClassroomRef: true },
+        skip: query.offset && query.offset > 0 ? query.offset : undefined,
+        take: query.limit && query.limit > 0 ? query.limit : undefined,
       })
     ).map((val) => val.ClassroomRef);
 

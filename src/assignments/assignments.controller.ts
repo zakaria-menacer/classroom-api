@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   NotFoundException,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
@@ -42,6 +43,8 @@ import {
   OwnedAssignmentGuard,
   OwnedOrEnrolledAssignmentGuard,
 } from './assignments.guard';
+import { query } from 'express';
+import { GetAssignmentsQueryDto } from './dto/get-assignment.dto';
 
 @Controller('/classrooms/:classroomId/assignments')
 @ApiTags('assignments')
@@ -158,8 +161,11 @@ export class AssignmentsClassroomController {
       },
     },
   })
-  async findAll(@Param('classroomId') classroomId: string) {
-    return await this.assignmentsService.findAll(classroomId);
+  async findAll(
+    @Param('classroomId') classroomId: string,
+    @Query() query: GetAssignmentsQueryDto,
+  ) {
+    return await this.assignmentsService.findAll(classroomId, query);
   }
 }
 

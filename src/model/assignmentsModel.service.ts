@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ModelService } from './model.service';
 import { CreateAssignmentDto } from 'src/assignments/dto/create-assignment.dto';
 import { UpdateAssignmentDto } from 'src/assignments/dto/update-assignment.dto';
+import { GetAssignmentsQueryDto } from 'src/assignments/dto/get-assignment.dto';
 
 @Injectable()
 export class AssignmentsModelService {
@@ -32,8 +33,16 @@ export class AssignmentsModelService {
     return assignment;
   }
 
-  async findAllByClassroom(classroomId: string) {
-    return await this.prisma.assignment.findMany({ where: { classroomId } });
+  async findAllByClassroom(classroomId: string, query: GetAssignmentsQueryDto) {
+    return await this.prisma.assignment.findMany({
+      where: {
+        classroomId,
+        ...(query.title && { title: { contains: query.title } }),
+        ...(query.deadline && { deadline: { gte: query.deadline } }),
+      },
+      skip: query.offset && query.offset > 0 ? query.offset : undefined,
+      take: query.limit && query.limit > 0 ? query.limit : undefined,
+    });
   }
 
   async findOne(assignmentId: string) {

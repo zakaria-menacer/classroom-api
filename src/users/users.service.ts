@@ -5,6 +5,7 @@ import { UserOktaService } from 'src/okta/user-okta.service';
 import { RolesModelService } from 'src/model/rolesModel.service';
 import { UsersModelService } from 'src/model/usersModel.service';
 import { AuthService } from 'src/auth/auth.service';
+import { GetUsersQueryDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -41,8 +42,8 @@ export class UsersService {
     return response;
   }
 
-  async findAll() {
-    const result = await this.userModel.findAll();
+  async findAll(query: GetUsersQueryDto) {
+    const result = await this.userModel.findAll(query);
     return result;
   }
 

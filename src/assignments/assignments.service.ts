@@ -4,6 +4,7 @@ import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { AssignmentsModelService } from 'src/model/assignmentsModel.service';
 import { join } from 'path';
 import { existsSync, unlinkSync } from 'fs';
+import { GetAssignmentsQueryDto } from './dto/get-assignment.dto';
 
 @Injectable()
 export class AssignmentsService {
@@ -16,8 +17,8 @@ export class AssignmentsService {
     return await this.assignmentsModel.create(classroomId, data, files);
   }
 
-  async findAll(classroomId: string) {
-    return await this.assignmentsModel.findAllByClassroom(classroomId);
+  async findAll(classroomId: string, query: GetAssignmentsQueryDto) {
+    return await this.assignmentsModel.findAllByClassroom(classroomId, query);
   }
 
   async findOne(assignmentId: string) {

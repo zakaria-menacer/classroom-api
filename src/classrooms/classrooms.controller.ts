@@ -9,6 +9,7 @@ import {
   UseGuards,
   NotFoundException,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { ClassroomsService } from './classrooms.service';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
@@ -33,6 +34,7 @@ import {
   OwnedOrEnrolledClassroomsGuard,
 } from './classrooms.guard';
 import { AuthorizationGuard } from 'src/auth/authorization.guard';
+import { GetClassroomsQueryDto } from './dto/get-classroom-dto';
 
 @Controller('classrooms')
 @ApiTags('classrooms')
@@ -88,10 +90,11 @@ export class ClassroomsController {
     description: 'Successful retrieval of classrooms for admin',
     type: AdminClassroomsResponseDto,
   })
-  async findAll(@User() user) {
+  async findAll(@User() user, @Query() query: GetClassroomsQueryDto) {
     if ((user?.permissions as string[]).includes('read:classroom:all'))
-      return this.classroomsService.findAllForAdmin();
-    return await this.classroomsService.findAll(user.id);
+      return this.classroomsService.findAllForAdmin(query);
+    delete query.createdBy;
+    return await this.classroomsService.findAll(user.id, query);
   }
 
   // ********************************************************
@@ -216,10 +219,7 @@ export class ClassroomsController {
     },
   })
   async unenroll(@Param('classroomId') classroomId: string, @User() user) {
-    const response = await this.classroomsService.unenroll(
-      user.id,
-      classroomId,
-    );
+    await this.classroomsService.unenroll(user.id, classroomId);
     return;
   }
 }

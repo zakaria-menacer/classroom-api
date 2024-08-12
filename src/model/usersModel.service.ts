@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ModelService } from './model.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { GetUsersQueryDto } from 'src/users/dto/get-user.dto';
 
 @Injectable()
 export class UsersModelService {
@@ -28,8 +29,18 @@ export class UsersModelService {
 
     return { ...result, role, permissions };
   }
-  async findAll() {
-    const result = await this.prisma.user.findMany();
+  async findAll(data: GetUsersQueryDto) {
+    const { limit, offset, ...query } = data;
+    const result = await this.prisma.user.findMany({
+      where: {
+        ...(query.firstName && { firstName: { contains: query.firstName } }),
+        ...(query.lastName && { lastName: { contains: query.lastName } }),
+        ...(query.email && { email: { contains: query.email } }),
+        ...(query.active !== undefined && { active: query.active }),
+      },
+      skip: offset && offset > 0 ? offset : undefined,
+      take: limit && limit > 0 ? limit : undefined,
+    });
     return result;
   }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
 import { ClassroomsModelService } from 'src/model/classroomsModel.service';
+import { GetClassroomsQueryDto } from './dto/get-classroom-dto';
 
 @Injectable()
 export class ClassroomsService {
@@ -10,11 +11,11 @@ export class ClassroomsService {
     return await this.classroomsModel.create(createdBy, dto);
   }
 
-  async findAll(userId: string) {
-    return await this.classroomsModel.findAll(userId);
+  async findAll(userId: string, query: GetClassroomsQueryDto) {
+    return await this.classroomsModel.findAll(userId, query);
   }
-  async findAllForAdmin() {
-    return await this.classroomsModel.findAllForAdmin();
+  async findAllForAdmin(query: GetClassroomsQueryDto) {
+    return await this.classroomsModel.findAllForAdmin(query);
   }
 
   async findOne(classroomId: string) {
