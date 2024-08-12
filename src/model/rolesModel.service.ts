@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ModelService } from './model.service';
 import { CreateRoleDto } from 'src/roles/dto/create-role.dto';
 import { UpdateRoleDto } from 'src/roles/dto/update-role.dto';
@@ -37,6 +41,18 @@ export class RolesModelService {
   }
   async delete(id: string) {
     return await this.prisma.$transaction(async (tx) => {
+      const role = await this.prisma.role.findUnique({
+        where: { id },
+        include: { User: true },
+      });
+      if (!role) {
+        throw new NotFoundException('Role not found');
+      }
+      if (role.User.length > 0) {
+        throw new BadRequestException(
+          'Cannot delete role. There are users assigned to this role.',
+        );
+      }
       await tx.rolePermission.deleteMany({ where: { role: id } });
       await tx.role.delete({ where: { id } });
     });

@@ -30,8 +30,16 @@ export class UsersService {
     const user = await this.userOktaService.create(dto);
     const password = dto.password;
     delete dto.password;
-    //* create user without password in db
-    await this.userModel.create({ ...dto, id: user.id });
+    try {
+      //* create user without password in db
+      await this.userModel.create({ ...dto, id: user.id });
+    } catch (error) {
+      //* delete user in okta if any error while creating user in local db
+      await this.userOktaService.deactivate(user.id);
+      await this.userOktaService.delete(user.id);
+
+      throw error;
+    }
 
     //* respond with id token and user infos
     const response = await this.authService.login({

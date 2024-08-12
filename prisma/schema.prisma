@@ -69,7 +69,7 @@ model Classroom {
   createdBy   String       @map("created_by")
   name        String
   description String?
-  UserRef     User         @relation(fields: [createdBy], references: [id])
+  UserRef     User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   Enrollment  Enrollment[]
   Assignment  Assignment[]
 
@@ -81,8 +81,8 @@ model Enrollment {
   classroomId  String    @map("classroom_id")
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
-  UserRef      User      @relation(fields: [userId], references: [id])
-  ClassroomRef Classroom @relation(fields: [classroomId], references: [id])
+  UserRef      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ClassroomRef Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 
   @@id([userId, classroomId])
   @@map("enrollments")
@@ -97,7 +97,7 @@ model Assignment {
   classroomId          String                 @map("classroom_id")
   maxGrade             Float?
   deadline             DateTime?
-  ClassroomRef         Classroom              @relation(fields: [classroomId], references: [id])
+  ClassroomRef         Classroom              @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   AssignmentFile       AssignmentFile[]
   AssignmentSubmission AssignmentSubmission[]
 
@@ -122,8 +122,8 @@ model AssignmentSubmission {
   submittedAt   DateTime   @default(now()) @map("submitted_at")
   updated_at    DateTime?  @updatedAt
   grade         Float?
-  AssignmentRef Assignment @relation(fields: [assignmentId], references: [id])
-  UserRef       User       @relation(fields: [userId], references: [id])
+  AssignmentRef Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  UserRef       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   status         SubmissionStatus @default(SUBMITTED)
   SubmissionFile SubmissionFile[]
