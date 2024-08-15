@@ -1,10 +1,19 @@
-import { Controller, Get, NotFoundException, Param, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { FilesService } from './files.service';
 import { createReadStream, existsSync } from 'fs';
 import { SkipInterceptor } from 'src/tools/skipInterceptor.decorator';
 import { join } from 'path';
 import { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthenticationGuard } from 'src/auth/auth.guard';
+import { AuthorizationGuard } from 'src/auth/authorization.guard';
 
 @Controller('files')
 @ApiTags('files')

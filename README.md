@@ -1,73 +1,113 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Classroom Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2014.0.0-brightgreen.svg)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project is an API-only classroom management system built with [NestJS](https://nestjs.com/). It enables users to create classrooms, manage assignments with file uploads, enroll in classrooms, and submit assignments with file uploads. The system uses permission-based access control (PBAC), where each user is assigned a role, and each role has multiple permissions. Authorization is enforced by checking if the user’s role has the necessary permissions for accessing specific API endpoints.
 
-## Description
+User authentication is managed via [Okta](https://developer.okta.com/), while permissions and roles are handled within the system itself.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Installation
+## Features
 
+- **User Management**: Admins can manage user accounts.
+- **Roles and permissions Management**: Users can create and manage classrooms.
+- **Classroom Management**: Admins can manage roles and permissions to control access to various API endpoints.
+- **Assignment Management**: Create assignments within classrooms, with the ability to upload files.
+- **Enrollment**: Users can enroll in classrooms and submit assignments with file uploads.
+- **Permission-Based Access Control**: API endpoints are secured based on user roles and permissions.
+- **Okta Integration**: User credentials are managed via Okta, not stored in the local database.
+
+
+
+## Getting Started
+### Prerequisites
+
+- **Node.js**: Ensure you have Node.js installed.
+- **PostgreSQL**: Set up PostgreSQL (or another supported SGBD, with modifications to Prisma).
+- **Okta**: Create an Okta app to manage user authentication.
+
+## Technologies
+
+This project utilizes the following technologies and libraries:
+
+- **[NestJS](https://nestjs.com/)**: A progressive Node.js framework for building efficient and scalable server-side applications.
+- **[Prisma](https://www.prisma.io/)**: An ORM for managing and interacting with the database.
+- **[Swagger](https://swagger.io/)**: For API documentation and interactive API testing.
+- **[Okta](https://www.okta.com/)**: For user authentication and identity management.
+- **[TypeScript](https://www.typescriptlang.org/)**: A statically typed superset of JavaScript.
+- **[Axios](https://axios-http.com/)**: Promise-based HTTP client for making requests.
+- **[Bcrypt](https://www.npmjs.com/package/bcrypt)**: For hashing passwords.
+- **[Class-Validator](https://github.com/typestack/class-validator)**: For validation of class properties.
+- **[Class-Transformer](https://github.com/typestack/class-transformer)**: For transforming plain objects into class instances.
+
+
+
+## Setup Instructions
+
+### 1. Clone the Repository
 ```bash
-$ npm install
+git clone https://github.com/zakaria-menacer/classroom-api.git
+cd classroom-api
 ```
 
-## Running the app
 
-```bash
-# development
-$ npm run start
+### 2. Create Okta Application
+1. Go to your Okta dashboard and create a new application of type Native.
+2. Configure the settings needed.
+3. Note down the Client ID, Client Secret, and organization URL.
+4. Note down the api key token from security section.
 
-# watch mode
-$ npm run start:dev
+### 3. Environment Setup
+Create a `.env` file in the root of your project with the following variables:
 
-# production mode
-$ npm run start:prod
+```env
+DATABASE_URL=your-database-connection-string
+PORT=3000
+
+#OKTA
+OKTA_ORG_URL= your-okta-organization-url
+OKTA_APP_ID= your-okta-client-id
+OKTA_APP_SECRET= your-okta-client-secret
+OKTA_API_TOKEN= your-okta-api-token
+
+# DEFAULT ADMIN
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 ```
 
-## Test
+#### Important:
+
+- Change `ADMIN_EMAIL` and `ADMIN_PASSWORD` to your preferred values. Ensure these credentials do not already exist in your Okta organization to avoid errors.
+* The password must be at least 8 characters long.
+
+### 4. Installation 
+After setting up the .env file, install dependencies by running:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Support
+This will automatically deploy the database schema, seed the database with default roles and permissions, and create a default admin user.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Seeding the Database
+If you need to reseed the database (e.g., if there were issues during the initial seeding), you can manually trigger the seeding process with:
+```bash
+npx prisma db seed
+```
 
-## Stay in touch
+## API Documentation
+API documentation is powered by Swagger and is available at:
+```
+GET /api/v1
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+
+## Contributing
+Feel free to contribute by submitting a pull request or opening an issue.
+
+
 
 ## License
+This project is licensed under the MIT License.
 
-Nest is [MIT licensed](LICENSE).

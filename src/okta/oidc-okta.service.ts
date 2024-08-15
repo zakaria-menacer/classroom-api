@@ -7,7 +7,7 @@ export class OidcOktaService {
   private readonly oktaDomain = this.config.get('OKTA_ORG_URL');
   private readonly oktaApiToken = this.config.get('OKTA_API_TOKEN');
   private readonly clientId = this.config.get('OKTA_APP_ID');
-  private readonly clientSecret = this.config.get('OKTA_APP_SERCET');
+  private readonly clientSecret = this.config.get('OKTA_APP_SECRET');
 
   constructor(private readonly config: ConfigService) {}
   async getIdToken(username: string, password: string) {

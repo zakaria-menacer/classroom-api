@@ -8,6 +8,7 @@ import {
   PrismaExceptionFilter,
 } from './exception-filters/exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,6 +38,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1', app, document);
 
   const port = process.env.PORT;
+  app.use(helmet());
   await app.listen(port, () =>
     console.log(`server is listening on port ${port}`),
   );
