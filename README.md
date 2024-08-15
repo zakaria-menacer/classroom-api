@@ -66,14 +66,14 @@ DATABASE_URL=your-database-connection-string
 PORT=3000
 
 #OKTA
-OKTA_ORG_URL="your-okta-organization-url"
-OKTA_APP_ID=your-okta-client-id
-OKTA_APP_SERCET=your-okta-client-secret
-OKTA_API_TOKEN=your-okta-api-token
+OKTA_ORG_URL= your-okta-organization-url
+OKTA_APP_ID= your-okta-client-id
+OKTA_APP_SECRET= your-okta-client-secret
+OKTA_API_TOKEN= your-okta-api-token
 
 # DEFAULT ADMIN
-ADMIN_EMAIL=admin-classroom@default.com
-ADMIN_PASSWORD=admin1234
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 ```
 
 #### Important:
