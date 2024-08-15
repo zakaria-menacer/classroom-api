@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { HashService } from 'src/tools/hash.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
@@ -10,8 +11,14 @@ export class UserOktaService {
   private readonly oktaApiToken = this.config.get('OKTA_API_TOKEN');
   private readonly appId = this.config.get('OKTA_APP_ID');
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly hashService: HashService,
+  ) {}
   async create(dto: CreateUserDto) {
+    //*hash password
+    const { hash, salt } = await this.hashService.hashPassword(dto.password);
+
     // * send a post req to okta to create a user in our application
     const response = await axios.post(
       `${this.domain}/api/v1/users`,
@@ -25,7 +32,11 @@ export class UserOktaService {
         },
         credentials: {
           password: {
-            value: dto.password,
+            hash: {
+              ...this.hashService.getMetaData(),
+              salt,
+              value: hash.split(salt)[1],
+            },
           },
         },
       },

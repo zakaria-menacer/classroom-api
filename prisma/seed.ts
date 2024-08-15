@@ -1,26 +1,14 @@
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import axios from 'axios';
+import { UserOktaService } from '../src/okta/user-okta.service';
+import { HashService } from '../src/tools/hash.service';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from '../src/app.module';
+import { UsersService } from '../src/users/users.service';
+import { AxiosError } from 'axios';
 
 const prisma = new PrismaClient();
 async function main() {
-  // const permissions = [
-  //   { name: 'create:role', description: '...' },
-  //   { name: 'read:role', description: '...' },
-  //   { name: 'read:role:all', description: '...' },
-  //   { name: 'update:role', description: '...' },
-  //   { name: 'delete:role', description: '...' },
-  //   { name: 'create:user', description: '...' },
-  //   { name: 'read:user', description: '...' },
-  //   { name: 'read:user:all', description: '...' },
-  //   { name: 'update:user', description: '...' },
-  //   { name: 'delete:user', description: '...' },
-  //   { name: 'create:classroom', description: '...' },
-  //   { name: 'read:classroom', description: '...' },
-  //   { name: 'read:classroom:all', description: '...' },
-  //   { name: 'update:classroom', description: '...' },
-  //   { name: 'delete:classroom', description: '...' },
-  // ];
-
   const roles_permissions = [
     // admin
     { role: '7d27a29f-d401-472e-bb5a-3554f9197550', permission: 'create:role' },
@@ -153,16 +141,6 @@ async function main() {
     },
   ];
 
-  // // //*upsert permissions
-
-  // for (const p of permissions) {
-  //   await prisma.permission.upsert({
-  //     where: { name: p.name },
-  //     update: { description: p.description },
-  //     create: { name: p.name, description: p.description },
-  //   });
-  // }
-
   //* upsert roles
   await prisma.role.upsert({
     where: { id: '7d27a29f-d401-472e-bb5a-3554f9197550', name: 'ADMIN' },
@@ -204,6 +182,37 @@ async function main() {
         },
       },
     });
+  }
+
+  //* create a default admin user
+  try {
+    const oktaService = new UserOktaService(
+      new ConfigService(),
+      new HashService(),
+    );
+
+    const admin = {
+      firstName: 'admin',
+      lastName: 'admin',
+      email: process.env.ADMIN_EMAIL || 'admin-classroom@default.com',
+      mobilePhone: '123456789',
+      roleId: '7d27a29f-d401-472e-bb5a-3554f9197550',
+      password: process.env.ADMIN_PASSWORD || 'admin1234',
+    };
+
+    const user = await oktaService.create(admin);
+    delete admin.password;
+    await prisma.user.upsert({
+      where: { id: user.id },
+      create: { ...admin, id: user.id },
+      update: admin,
+    });
+    // const app = await NestFactory.createApplicationContext(AppModule);
+    // const usersService = app.get(UsersService);
+    // await usersService.create(admin);
+  } catch (error) {
+    if (error instanceof AxiosError) console.log(error.response?.data);
+    else console.log(error);
   }
 }
 
