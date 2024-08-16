@@ -131,12 +131,14 @@ export class AxiosExceptionFilter extends BaseExceptionFilter {
     //     break;
     // }
 
-    if (exception.response.data?.error_description) {
-      message = exception.response.data.error_description;
-    } else if (exception.response.data.errorCauses.length != 0) {
-      message = exception.response.data.errorCauses[0].errorSummary;
-    } else {
-      message = exception.response.data.errorSummary;
+    if (exception?.response?.data) {
+      if (exception.response?.data?.error_description) {
+        message = exception.response.data.error_description;
+      } else if (exception.response.data.errorCauses.length != 0) {
+        message = exception.response.data.errorCauses[0].errorSummary;
+      } else {
+        message = exception.response?.data.errorSummary;
+      }
     }
 
     response.status(status).json({
