@@ -62,11 +62,13 @@ cd classroom-api
 Create a `.env` file in the root of your project with the following variables:
 
 ```env
-DATABASE_URL=your-database-connection-string
+DATABASE_URL=postgres://username:password@host:port/database_name
 PORT=3000
 
 #OKTA
-OKTA_ORG_URL= your-okta-organization-url
+OKTA_ORG_URL= https://your-okta-organization-url
+# example OKTA_ORG_URL=https://dev-123456789.okta.com
+
 OKTA_APP_ID= your-okta-client-id
 OKTA_APP_SECRET= your-okta-client-secret
 OKTA_API_TOKEN= your-okta-api-token
