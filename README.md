@@ -5,7 +5,8 @@
 
 This project is an API-only classroom management system built with [NestJS](https://nestjs.com/). It enables users to create classrooms, manage assignments with file uploads, enroll in classrooms, and submit assignments with file uploads. The system uses permission-based access control (PBAC), where each user is assigned a role, and each role has multiple permissions. Authorization is enforced by checking if the user’s role has the necessary permissions for accessing specific API endpoints.
 
-User authentication is managed via [Okta](https://developer.okta.com/), while permissions and roles are handled within the system itself.
+User authentication is managed via [Okta](https://developer.okta.com/) using the OIDC (OpenID Connect) protocol. Okta handles only the authentication, while permissions and roles are managed within the system itself.
+
 
 
 ## Features
@@ -53,10 +54,21 @@ cd classroom-api
 
 
 ### 2. Create Okta Application
-1. Go to your Okta dashboard and create a new application of type Native.
-2. Configure the settings needed.
-3. Note down the Client ID, Client Secret, and organization URL.
-4. Note down the api key token from security section.
+1. Go to your Okta dashboard and create a new application.
+2. Choose OIDC - OpenID Connect as a sign-in method.
+3. Select Native Application as Application type.
+4. Configure the settings needed.
+5. Note down the Client ID, Client Secret, and organization URL.
+6. Go to the security section and note down the API key token.
+
+
+<u>**Note:**</u> If you plan to use the login endpoint provided in this API, follow these additional steps:
+
+1. After creating the application, go to the **General Settings** in your Okta application.
+   - In the **Grant type** subsection, ensure you check **Resource Owner Password**.
+
+2. Navigate to the **Sign-On** section.
+   - Edit the **Authentication Policy** and set it to **Password only**.
 
 ### 3. Environment Setup
 Create a `.env` file in the root of your project with the following variables:
@@ -91,6 +103,20 @@ npm install
 ```
 
 This will automatically deploy the database schema, seed the database with default roles and permissions, and create a default admin user.
+
+
+### 5. Run the Server
+After setting up the environment and installing dependencies, you can start the server:
+
+
+- Development mode :
+```bash
+npm run start:dev
+```
+- Production mode :
+```bash
+npm run start:prod
+```
 
 ## Seeding the Database
 If you need to reseed the database (e.g., if there were issues during the initial seeding), you can manually trigger the seeding process with:
